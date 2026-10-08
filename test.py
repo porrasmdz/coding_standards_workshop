@@ -12,6 +12,12 @@ class GradeThreshold(IntEnum):
 class Student:
     """Class representing a student and its utilities in this workshop program"""
     def __init__(self, user_id, name):
+        if not isinstance(user_id, str) or not user_id.strip():
+            raise ValueError("Student ID cannot be empty.")
+
+        if not isinstance(name, str) or not name.strip():
+            raise ValueError("Student name cannot be empty.")
+
         self.id = user_id
         self.name = name
         self.grades = []
@@ -41,8 +47,15 @@ class Student:
 
     def check_honor(self):
         """Checks if student has honourable grade and assign it"""
-        self.honor = self.calc_average() > 90
+        self.honor = self.calc_average() > GradeThreshold.A
         return self.honor
+
+
+    def check_passed(self):
+        """Determines if the student has passed."""
+        self.is_passed = self.calc_average() >= GradeThreshold.D
+        return self.is_passed
+
 
     def get_letter(self):
         """Determine the letter grade based on the average."""
@@ -67,35 +80,101 @@ class Student:
 
         del self.grades[index]
 
+    def delete_grade_by_value(self, grade):
+        """Remove the first occurrence of a grade by value."""
+        if grade not in self.grades:
+            raise ValueError(f"Grade {grade} does not exist.")
+
+        self.grades.remove(grade)
+
     def report(self):
         """Generates user report"""
-        print(f"ID: {self.id}")
-        print(f"Name: {self.name}")
-        print(f"Grades Count: {len(self.grades)}")
-        print(f"Final Grade: {self.get_letter()}")
+        average = self.calc_average()
+        self.check_passed()
+        self.check_honor()
+
+        print("===== STUDENT REPORT =====")
+        print(f"Student ID: {self.id}")
+        print(f"Student Name: {self.name}")
+        print(f"Number of Grades: {len(self.grades)}")
+        print(f"Average Grade: {average:.2f}")
+        print(f"Letter Grade: {self.get_letter()}")
+        print(f"Pass/Fail: {'Passed' if self.is_passed else 'Failed'}")
+        print(f"Honor Roll: {self.honor}")
 
 
 if __name__ == "__main__":
-    student = Student("x", "")
+    print("\n===== 1. ADD STUDENTS =====")
+    student = Student("001", "John Doe")
+    print(f"Student created: {student.id} - {student.name}")
+
+    print("\n===== 2. ADD GRADES =====")
+    for lgrade in [95.0, 72.5, 88.0]:
+        student.add_grade(lgrade)
+        print(f"Grade added: {lgrade}")
+    print(f"Current grades: {student.grades}")
+
+    print("\n===== 3. CALCULATE AVERAGE =====")
+    print(f"Average grade: {student.calc_average():.2f}")
+
+    print("\n===== 4. DETERMINE LETTER GRADE =====")
+    for lgrade in [95, 85, 75, 65, 55]:
+        example = Student(f"TEST-{lgrade}", "Test Student")
+        example.add_grade(lgrade)
+        print(f"Average: {lgrade} -> Letter: {example.get_letter()}")
+
+    print("\n===== 5. DETERMINE PASS/FAIL =====")
+    for lgrade in [90, 60, 59]:
+        example = Student(f"PASS-{lgrade}", "Test Student")
+        example.add_grade(lgrade)
+        example.check_passed()
+        status = "Passed" if example.is_passed else "Failed"
+        print(f"Average: {lgrade} -> {status}")
+
+    print("\n===== 6. HANDLE INVALID INPUTS =====")
+
+    for user_id, name in [("", "John"), ("002", "")]:
+        try:
+            Student(user_id, name)
+        except (ValueError, TypeError) as error:
+            print(f"Invalid student: {error}")
+
+    for lgrade in ["Fifty", -10, 150]:
+        try:
+            student.add_grade(lgrade)
+        except (ValueError, TypeError) as error:
+            print(f"Invalid grade ({lgrade}): {error}")
+
+    print("\n===== 7. HONOR ROLL DETECTION =====")
+    for lgrade in [95, 90, 89]:
+        example = Student(f"HONOR-{lgrade}", "Test Student")
+        example.add_grade(lgrade)
+        print(f"Average: {lgrade} -> Honor Roll: {example.check_honor()}")
+
+    print("\n===== 8. REMOVE A GRADE =====")
+    example = Student("003", "Jane Doe")
+
+    for lgrade in [95.0, 80.0, 70.0]:
+        example.add_grade(lgrade)
+
+    print(f"Initial grades: {example.grades}")
+
+    example.delete_grade(1)
+    print(f"After removing index 1: {example.grades}")
+
+    example.delete_grade_by_value(95.0)
+    print(f"After removing value 95.0: {example.grades}")
 
     try:
-        student.add_grade(100)
-        student.add_grade("Fifty")  # TypeError
-    except (TypeError, ValueError) as error:
-        print(f"Error adding grade: {error}")
-
-    try:
-        student.calc_average()
-        student.check_honor()
-    except ValueError as error:
-        print(f"Error calculating grades: {error}")
-
-    try:
-        student.delete_grade(5)  # IndexError
+        example.delete_grade(10)
     except (IndexError, TypeError) as error:
-        print(f"Error deleting grade: {error}")
+        print(f"Invalid index: {error}")
 
     try:
-        student.report()
-    except (ValueError, TypeError) as error:
-        print(f"Error generating report: {error}")
+        example.delete_grade_by_value(100.0)
+    except ValueError as error:
+        print(f"Invalid value: {error}")
+
+    print("\n===== 9. STUDENT SUMMARY REPORT =====")
+    student.report()
+
