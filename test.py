@@ -133,9 +133,9 @@ if __name__ == "__main__":
 
     print("\n===== 6. HANDLE INVALID INPUTS =====")
 
-    for user_id, name in [("", "John"), ("002", "")]:
+    for userid, username in [("", "John"), ("002", "")]:
         try:
-            Student(user_id, name)
+            Student(userid, username)
         except (ValueError, TypeError) as error:
             print(f"Invalid student: {error}")
 
@@ -177,4 +177,3 @@ if __name__ == "__main__":
 
     print("\n===== 9. STUDENT SUMMARY REPORT =====")
     student.report()
-
