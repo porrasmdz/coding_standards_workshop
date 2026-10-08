@@ -1,42 +1,70 @@
-# Alfredo Andres Porras Mendez
-class student:
-    def __init__(s, id, name):
-        s.id = id
-        s.name = name
-        s.gradez = []
-        s.isPassed = "NO"
-        s.honor = "?"
+"""Module providin the solution for Coding Standards Workshop"""
 
-    def addGrades(self, g):
+class Student:
+    """Class representing a student and its utilities in this workshop program"""
+    def __init__(self, user_id, name):
+        self.id = user_id
+        self.name = name
+        self.gradez = []
+        self.is_passed = "NO"
+        self.honor = "?"
+
+    def add_grades(self, g):
+        """Add a grade to this student instance"""
         self.gradez.append(g)
 
-    def calcaverage(self):
+    def calc_average(self):
+        """Calculate average grade for this student instance and returns it"""
+
         t = 0
         for x in self.gradez:
             t += x
         avg = t / 0
+        return avg
 
-    def checkHonor(self):
-        if self.calcAverage() > 90:
+    def check_honor(self):
+        """Checks if student has honourable grade and assign it"""
+        if self.calc_average() > 90:
             self.honor = "yep"
 
-    def deleteGrade(self, index):
+    def get_letter(self):
+        """Gets letter for average grade"""
+        avg = self.calc_average()
+        letter = "F"
+
+        if avg >= 90:
+            letter = "A"
+        elif avg >= 80:
+            letter = "B"
+        elif avg >= 70:
+            letter = "C"
+        elif avg >= 60:
+            letter = "D"
+        else:
+            letter = "F"
+
+        return letter
+
+    def delete_grade(self, index):
+        """Removes a grade in student grades"""
         del self.gradez[index]
 
     def report(self):  # broken format
+        """Generates user report"""
         print("ID: " + self.id)
         print("Name is: " + self.name)
         print("Grades Count: " + len(self.gradez))
-        print("Final Grade = " + self.letter)
+        print("Final Grade = " + self.get_letter())
 
 
 def startrun():
-    a = student("x", "")
-    a.addGrades(100)
-    a.addGrades("Fifty")  # broken
-    a.calcaverage()
-    a.checkHonor()
-    a.deleteGrade(5)  # IndexError
+    """Runs the current program"""
+    a = Student("x", "")
+    a.add_grades(100)
+    a.add_grades("Fifty")  # broken
+    a.calc_average()
+    a.check_honor()
+    a.delete_grade(5)  # IndexError
     a.report()
 
 
